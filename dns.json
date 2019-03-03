@@ -45,10 +45,13 @@
         "Domain": "vplauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "20",
+        "Main IP Dev": "[if(parameters('isDevBlue'), parameters('Main IP Blue Dev'), parameters('Main IP Green Dev'))]",
+        "Main IP Prod": "[if(parameters('isProdBlue'), parameters('Main IP Blue Prod'), parameters('Main IP Green Prod'))]",
         "cnames-dev": [
             "pas-api",
             "pas-workbench"
-        ]
+        ],
+        "cnames-prod": "[variables('cnames-dev')]"
     },
     "resources": [
         {
@@ -109,6 +112,44 @@
         },
         {
             "copy": {
+                "name": "cnames-blue-dev",
+                "count": "[length(variables('cnames-dev'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('cnames-dev')[copyIndex()], '.blue.dev')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[parameters('Main IP Blue Dev')]"
+                }
+            }
+        },
+        {
+            "copy": {
+                "name": "cnames-green-dev",
+                "count": "[length(variables('cnames-dev'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('cnames-dev')[copyIndex()], '.green.dev')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[parameters('Main IP Green Dev')]"
+                }
+            }
+        },
+        {
+            "copy": {
                 "name": "cnames-dev",
                 "count": "[length(variables('cnames-dev'))]"
             },
@@ -122,7 +163,64 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('Main IP Blue Dev')]"
+                    "cname": "[variables('Main IP Dev')]"
+                }
+            }
+        },
+        {
+            "copy": {
+                "name": "cnames-blue-prod",
+                "count": "[length(variables('cnames-prod'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('cnames-dev')[copyIndex()], '.blue')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[parameters('Main IP Blue Prod')]"
+                }
+            }
+        },
+        {
+            "copy": {
+                "name": "cnames-green-prod",
+                "count": "[length(variables('cnames-prod'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('cnames-dev')[copyIndex()], '.green')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[parameters('Main IP Green Prod')]"
+                }
+            }
+        },
+        {
+            "copy": {
+                "name": "cnames-prod",
+                "count": "[length(variables('cnames-prod'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('cnames-dev')[copyIndex()])]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[variables('Main IP Prod')]"
                 }
             }
         }
