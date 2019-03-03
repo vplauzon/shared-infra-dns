@@ -1,2 +1,3 @@
-# shared-infra-dns
+# DNS
+
 DNS Zone of shared infrastructure.

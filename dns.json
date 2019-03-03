@@ -1,0 +1,131 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "isDevBlue": {
+            "metadata": {
+                "description": "True iif dev is blue (otherwise green)"
+            },
+            "defaultValue": true,
+            "type": "bool"
+        },
+        "isProdBlue": {
+            "metadata": {
+                "description": "True iif prod is blue (otherwise green)"
+            },
+            "defaultValue": true,
+            "type": "bool"
+        },
+        "Main IP Blue Dev": {
+            "metadata": {
+                "description": "Main IP of the blue-dev cluster"
+            },
+            "type": "string"
+        },
+        "Main IP Green Dev": {
+            "metadata": {
+                "description": "Main IP of the green-dev cluster"
+            },
+            "type": "string"
+        },
+        "Main IP Blue Prod": {
+            "metadata": {
+                "description": "Main IP of the blue-prod cluster"
+            },
+            "type": "string"
+        },
+        "Main IP Green Dev": {
+            "metadata": {
+                "description": "Main IP of the green-prod cluster"
+            },
+            "type": "string"
+        }
+    },
+    "variables": {
+        "Domain": "vplauzon.com",
+        "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
+        "TTL": "20",
+        "cnames-dev": [
+            "pas-api",
+            "pas-workbench"
+        ]
+    },
+    "resources": [
+        {
+            "name": "[variables('Domain')]",
+            "type": "Microsoft.Network/dnsZones",
+            "apiVersion": "2017-09-01",
+            "location": "global",
+            "tags": {},
+            "properties": {},
+            "resources": [
+                {
+                    "name": "@",
+                    "type": "NS",
+                    "apiVersion": "2018-05-01",
+                    "dependsOn": [
+                        "[variables('Domain ID')]"
+                    ],
+                    "properties": {
+                        "TTL": 172800,
+                        "NSRecords": [
+                            {
+                                "nsdname": "ns1-09.azure-dns.com."
+                            },
+                            {
+                                "nsdname": "ns2-09.azure-dns.net."
+                            },
+                            {
+                                "nsdname": "ns3-09.azure-dns.org."
+                            },
+                            {
+                                "nsdname": "ns4-09.azure-dns.info."
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "@",
+                    "type": "SOA",
+                    "apiVersion": "2018-05-01",
+                    "dependsOn": [
+                        "[variables('Domain ID')]"
+                    ],
+                    "properties": {
+                        "TTL": 3600,
+                        "SOARecord": {
+                            "email": "azuredns-hostmaster.microsoft.com",
+                            "expireTime": 2419200,
+                            "host": "ns1-09.azure-dns.com.",
+                            "minimumTTL": 300,
+                            "refreshTime": 3600,
+                            "retryTime": 300,
+                            "serialNumber": 1
+                        },
+                        "targetResource": {}
+                    }
+                }
+            ]
+        },
+        {
+            "copy": {
+                "name": "cnames-dev",
+                "count": "[length(variables('cnames-dev'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('cnames-dev')[copyIndex()], '.dev')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[parameters('Main IP Blue Dev')]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}

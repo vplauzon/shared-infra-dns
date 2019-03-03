@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Vault ID": {
+            "metadata": {
+                "description": "Azure ID of the vault"
+            },
+            "type": "string"
+        },
+        "isDevBlue": {
+            "metadata": {
+                "description": "True iif dev is blue (otherwise green)"
+            },
+            "defaultValue": true,
+            "type": "bool"
+        },
+        "isProdBlue": {
+            "metadata": {
+                "description": "True iif prod is blue (otherwise green)"
+            },
+            "defaultValue": true,
+            "type": "bool"
+        }
+    },
+    "variables": {
+        "Template URL Prefix": "https://raw.githubusercontent.com/vplauzon/shared-infra-dns/master/",
+        "DNS Template URL": "[concat(variables('Template URL Prefix'), 'dns.json')]",
+        "DNS Deployment Name":"[concat('Cluster-', guid(deployment().name))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('DNS Deployment Name')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('DNS Template URL')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "isDevBlue": {
+                        "value": "[parameters('isDevBlue')]"
+                    },
+                    "isProdBlue": {
+                        "value": "[parameters('isProdBlue')]"
+                    },
+                    "Main IP Blue Dev": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[parameters('Vault ID')]"
+                            },
+                            "secretName": "dev-ip-blue"
+                        }
+                    },
+                    "Main IP Green Dev": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[parameters('Vault ID')]"
+                            },
+                            "secretName": "dev-ip-green"
+                        }
+                    },
+                    "Main IP Blue Prod": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[parameters('Vault ID')]"
+                            },
+                            "secretName": "prod-ip-blue"
+                        }
+                    },
+                    "Main IP Green Prod": {
+                        "reference": {
+                            "keyVault": {
+                                "id": "[parameters('Vault ID')]"
+                            },
+                            "secretName": "prod-ip-green"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}
