@@ -3,8 +3,8 @@
 Param(
     [string] [Parameter(Mandatory=$true)] $ResourceGroupLocation,
     [string] $ResourceGroupName = 'vpl-dns',
-    [string] $TemplateFile = 'shared-infra-dns.json',
-    [string] $TemplateParametersFile = 'shared-infra-dns.parameters.json',
+    [string] $TemplateFile = 'dns.json',
+    [string] $TemplateParametersFile = 'dns.parameters.json',
     [switch] $ValidateOnly
 )
 
