@@ -34,7 +34,7 @@
             },
             "type": "string"
         },
-        "Main IP Green Dev": {
+        "Main IP Green Prod": {
             "metadata": {
                 "description": "Main IP of the green-prod cluster"
             },
