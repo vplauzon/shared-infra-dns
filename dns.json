@@ -2,39 +2,25 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "isDevBlue": {
-            "metadata": {
-                "description": "True iif dev is blue (otherwise green)"
-            },
-            "defaultValue": true,
-            "type": "bool"
-        },
-        "isProdBlue": {
-            "metadata": {
-                "description": "True iif prod is blue (otherwise green)"
-            },
-            "defaultValue": true,
-            "type": "bool"
-        },
-        "Main IP Blue Dev": {
+        "mainIpBlueDev": {
             "metadata": {
                 "description": "Main IP of the blue-dev cluster"
             },
             "type": "string"
         },
-        "Main IP Green Dev": {
+        "mainIpGreenDev": {
             "metadata": {
                 "description": "Main IP of the green-dev cluster"
             },
             "type": "string"
         },
-        "Main IP Blue Prod": {
+        "mainIpBlueProd": {
             "metadata": {
                 "description": "Main IP of the blue-prod cluster"
             },
             "type": "string"
         },
-        "Main IP Green Prod": {
+        "mainIpGreenProd": {
             "metadata": {
                 "description": "Main IP of the green-prod cluster"
             },
@@ -42,11 +28,13 @@
         }
     },
     "variables": {
+        "isDevBlue": true,
+        "isProdBlue": true,
         "Domain": "vplauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "20",
-        "Main IP Dev": "[if(parameters('isDevBlue'), parameters('Main IP Blue Dev'), parameters('Main IP Green Dev'))]",
-        "Main IP Prod": "[if(parameters('isProdBlue'), parameters('Main IP Blue Prod'), parameters('Main IP Green Prod'))]",
+        "Main IP Dev": "[if(variables('isDevBlue'), parameters('mainIpBlueDev'), parameters('mainIpGreenDev'))]",
+        "Main IP Prod": "[if(variables('isProdBlue'), parameters('mainIpBlueProd'), parameters('mainIpGreenProd'))]",
         "cnames-dev": [
             "pas-api",
             "pas-workbench"
@@ -125,7 +113,7 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('Main IP Blue Dev')]"
+                    "cname": "[parameters('mainIpBlueDev')]"
                 }
             }
         },
@@ -144,7 +132,7 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('Main IP Green Dev')]"
+                    "cname": "[parameters('mainIpGreenDev')]"
                 }
             }
         },
@@ -182,7 +170,7 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('Main IP Blue Prod')]"
+                    "cname": "[parameters('mainIpBlueProd')]"
                 }
             }
         },
@@ -201,7 +189,7 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('Main IP Green Prod')]"
+                    "cname": "[parameters('mainIpGreenProd')]"
                 }
             }
         },
@@ -225,6 +213,5 @@
             }
         }
     ],
-    "outputs": {
-    }
+    "outputs": {}
 }
