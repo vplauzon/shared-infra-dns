@@ -67,6 +67,15 @@
     },
     "resources": [
         {
+            "type": "Microsoft.Authorization/locks",
+            "apiVersion": "2015-01-01",
+            "name": "DNS-lock",
+            "properties": {
+                "level": "CannotDelete",
+                "notes": "Forbid deletion of DNS Zone"
+            }
+        },
+        {
             "comments": "Boiler plate entries",
             "name": "[variables('Domain')]",
             "type": "Microsoft.Network/dnsZones",
