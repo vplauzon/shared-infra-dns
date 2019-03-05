@@ -33,8 +33,32 @@
         "Domain": "vplauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "20",
-        "Main IP Dev": "[if(variables('isDevBlue'), parameters('mainIpBlueDev'), parameters('mainIpGreenDev'))]",
-        "Main IP Prod": "[if(variables('isProdBlue'), parameters('mainIpBlueProd'), parameters('mainIpGreenProd'))]",
+        "Main IPs": [
+            {
+                "name": "main-ip.blue.dev",
+                "cname": "[parameters('mainIpBlueDev')]"
+            },
+            {
+                "name": "main-ip.green.dev",
+                "cname": "[parameters('mainIpGreenDev')]"
+            },
+            {
+                "name": "main-ip.dev",
+                "cname": "[if(variables('isDevBlue'), parameters('mainIpBlueDev'), parameters('mainIpGreenDev'))]"
+            },
+            {
+                "name": "main-ip.blue.prod",
+                "cname": "[parameters('mainIpBlueProd')]"
+            },
+            {
+                "name": "main-ip.green.prod",
+                "cname": "[parameters('mainIpGreenProd')]"
+            },
+            {
+                "name": "main-ip.prod",
+                "cname": "[if(variables('isProdBlue'), parameters('mainIpBlueProd'), parameters('mainIpGreenProd'))]"
+            }
+        ],
         "cnames-dev": [
             "pas-api",
             "pas-workbench"
@@ -43,6 +67,7 @@
     },
     "resources": [
         {
+            "comments": "Boiler plate entries",
             "name": "[variables('Domain')]",
             "type": "Microsoft.Network/dnsZones",
             "apiVersion": "2017-09-01",
@@ -99,6 +124,27 @@
             ]
         },
         {
+            "comments": "Main IP Entries",
+            "copy": {
+                "name": "cnames-blue-dev",
+                "count": "[length(variables('Main IPs'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('Main IPs')[copyIndex()].name)]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "variables('Main IPs')[copyIndex()].cname"
+                }
+            }
+        },
+        {
+            "comments": "Blue Dev Entries",
             "copy": {
                 "name": "cnames-blue-dev",
                 "count": "[length(variables('cnames-dev'))]"
@@ -113,11 +159,12 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('mainIpBlueDev')]"
+                    "cname": "[concat('main-ip.blue.dev.', variables('Domain'))]"
                 }
             }
         },
         {
+            "comments": "Green Dev Entries",
             "copy": {
                 "name": "cnames-green-dev",
                 "count": "[length(variables('cnames-dev'))]"
@@ -132,11 +179,12 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('mainIpGreenDev')]"
+                    "cname": "[concat('main-ip.green.dev.', variables('Domain'))]"
                 }
             }
         },
         {
+            "comments": "Dev (non colour specific) Entries",
             "copy": {
                 "name": "cnames-dev",
                 "count": "[length(variables('cnames-dev'))]"
@@ -151,11 +199,12 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[variables('Main IP Dev')]"
+                    "cname": "[concat('main-ip.dev.', variables('Domain'))]"
                 }
             }
         },
         {
+            "comments": "Blue Prod Entries",
             "copy": {
                 "name": "cnames-blue-prod",
                 "count": "[length(variables('cnames-prod'))]"
@@ -170,11 +219,12 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('mainIpBlueProd')]"
+                    "cname": "[concat('main-ip.blue.prod.', variables('Domain'))]"
                 }
             }
         },
         {
+            "comments": "Green Prod Entries",
             "copy": {
                 "name": "cnames-green-prod",
                 "count": "[length(variables('cnames-prod'))]"
@@ -189,11 +239,12 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[parameters('mainIpGreenProd')]"
+                    "cname": "[concat('main-ip.green.prod.', variables('Domain'))]"
                 }
             }
         },
         {
+            "comments": "Prod (non colour specific) Entries",
             "copy": {
                 "name": "cnames-prod",
                 "count": "[length(variables('cnames-prod'))]"
@@ -208,11 +259,10 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[variables('Main IP Prod')]"
+                    "cname": "[concat('main-ip.prod.', variables('Domain'))]"
                 }
             }
         }
     ],
-    "outputs": {
-    }
+    "outputs": {}
 }
