@@ -139,7 +139,7 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "variables('Main IPs')[copyIndex()].cname"
+                    "cname": "[variables('Main IPs')[copyIndex()].cname]"
                 }
             }
         },
