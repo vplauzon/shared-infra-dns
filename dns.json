@@ -28,7 +28,7 @@
         }
     },
     "variables": {
-        "Is Prod Blue": true,
+        "Is Prod Blue": false,
         "Domain": "vplauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "20",
