@@ -39,6 +39,10 @@
             {
                 "from": "main-ip.green",
                 "to": "[parameters('mainIpGreenProd')]"
+            },
+            {
+                "from": "main-ip",
+                "to": "[variables('Main IP Prod')]"
             }
         ],
         "Apps Dev": [
@@ -201,7 +205,7 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[variables('Main IP Prod')]"
+                    "cname": "[concat('main-ip.', variables('Domain'))]"
                 }
             }
         }
