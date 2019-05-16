@@ -26,14 +26,11 @@
         "Domain": "vplauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "20",
+        "Main IP Prod":"[if(variables('Is Prod Blue'), parameters('mainIpBlueProd'), parameters('mainIpGreenProd'))]",
         "Main IP Mappings": [
             {
                 "from": "main-ip.dev",
                 "to": "[parameters('mainIpDev')]"
-            },
-            {
-                "from": "main-ip.staging",
-                "to": "[parameters('mainIpStaging')]"
             },
             {
                 "from": "main-ip.blue",
@@ -42,17 +39,12 @@
             {
                 "from": "main-ip.green",
                 "to": "[parameters('mainIpGreenProd')]"
-            },
-            {
-                "from": "main-ip",
-                "to": "[if(variables('Is Prod Blue'), parameters('mainIpBlueProd'), parameters('mainIpGreenProd'))]"
             }
         ],
         "Apps Dev": [
             "pas-api",
             "pas-workbench"
         ],
-        "Apps Staging": "[variables('Apps Dev')]",
         "Apps Prod": "[variables('Apps Dev')]"
     },
     "resources": [
@@ -154,26 +146,6 @@
             }
         },
         {
-            "comments": "Staging Entries",
-            "copy": {
-                "name": "staging-entries",
-                "count": "[length(variables('Apps Staging'))]"
-            },
-            "name": "[concat(variables('Domain'), '/', variables('Apps Staging')[copyIndex()], '.staging')]",
-            "type": "Microsoft.Network/dnsZones/CNAME",
-            "apiVersion": "2018-05-01",
-            "dependsOn": [
-                "[variables('Domain ID')]"
-            ],
-            "properties": {
-                "metadata": {},
-                "TTL": "[variables('TTL')]",
-                "CNAMERecord": {
-                    "cname": "[concat('main-ip.staging.', variables('Domain'))]"
-                }
-            }
-        },
-        {
             "comments": "Prod Blue Entries",
             "copy": {
                 "name": "prod-blue-entries",
@@ -229,7 +201,7 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "[concat('main-ip.', variables('Domain'))]"
+                    "cname": "[variables('Main IP Prod')]"
                 }
             }
         }
