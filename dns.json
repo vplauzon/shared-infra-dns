@@ -8,12 +8,6 @@
             },
             "type": "string"
         },
-        "mainIpStaging": {
-            "metadata": {
-                "description": "Main IP of staging cluster"
-            },
-            "type": "string"
-        },
         "mainIpBlueProd": {
             "metadata": {
                 "description": "Main IP of the blue-prod cluster"
