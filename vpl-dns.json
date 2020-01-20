@@ -10,32 +10,35 @@
     },
     "resources": [
         {
-            "comments": "Boiler plate entries",
             "name": "[variables('Domain')]",
             "type": "Microsoft.Network/dnsZones",
             "apiVersion": "2018-05-01",
             "location": "global",
-            "tags": {},
-            "properties": {},
-            "resources": [
-            ]
-        },
-        {
-            "comments": "Prod Blog Entry",
-            "name": "[concat(variables('Domain'), '/*')]",
-            "type": "Microsoft.Network/dnsZones/CNAME",
-            "apiVersion": "2018-05-01",
-            "dependsOn": [
-                "[variables('Domain ID')]"
-            ],
+            "tags": {
+            },
             "properties": {
-                "metadata": {},
-                "TTL": "[variables('TTL')]",
-                "CNAMERecord": {
-                    "cname": "vplauzon.github.io"
+            },
+            "resources": [
+                {
+                    "comments": "Prod Blog Entry",
+                    "name": "*",
+                    "type": "CNAME",
+                    "apiVersion": "2018-05-01",
+                    "dependsOn": [
+                        "[variables('Domain ID')]"
+                    ],
+                    "properties": {
+                        "metadata": {
+                        },
+                        "TTL": "[variables('TTL')]",
+                        "CNAMERecord": {
+                            "cname": "vplauzon.github.io"
+                        }
+                    }
                 }
-            }
+            ]
         }
     ],
-    "outputs": {}
+    "outputs": {
+    }
 }
