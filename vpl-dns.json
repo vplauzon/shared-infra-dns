@@ -68,7 +68,7 @@
         },
         {
             "comments": "Prod Blog Entry",
-            "name": "[concat(variables('Domain'), '/')]",
+            "name": "[concat(variables('Domain'), '/*')]",
             "type": "Microsoft.Network/dnsZones/CNAME",
             "apiVersion": "2018-05-01",
             "dependsOn": [
@@ -78,7 +78,7 @@
                 "metadata": {},
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
-                    "cname": "http://vplauzon.github.io/"
+                    "cname": "vplauzon.github.io"
                 }
             }
         }
