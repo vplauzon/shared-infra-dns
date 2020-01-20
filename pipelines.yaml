@@ -53,7 +53,7 @@ stages:
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - vpl-dns.json
         inputs:
-          azureSubscription: devops-deploy
+          azureSubscription: shared-infra
           resourceGroupName: $(rg)
           location: '$(location)'
           templateLocation:  Linked artifact
