@@ -1,0 +1,87 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+    },
+    "variables": {
+        "Domain": "vincentlauzon.com",
+        "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
+        "TTL": "20"
+    },
+    "resources": [
+        {
+            "comments": "Boiler plate entries",
+            "name": "[variables('Domain')]",
+            "type": "Microsoft.Network/dnsZones",
+            "apiVersion": "2018-05-01",
+            "location": "global",
+            "tags": {},
+            "properties": {},
+            "resources": [
+                {
+                    "name": "@",
+                    "type": "NS",
+                    "apiVersion": "2018-05-01",
+                    "dependsOn": [
+                        "[variables('Domain ID')]"
+                    ],
+                    "properties": {
+                        "TTL": 172800,
+                        "NSRecords": [
+                            {
+                                "nsdname": "ns1-09.azure-dns.com."
+                            },
+                            {
+                                "nsdname": "ns2-09.azure-dns.net."
+                            },
+                            {
+                                "nsdname": "ns3-09.azure-dns.org."
+                            },
+                            {
+                                "nsdname": "ns4-09.azure-dns.info."
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "@",
+                    "type": "SOA",
+                    "apiVersion": "2018-05-01",
+                    "dependsOn": [
+                        "[variables('Domain ID')]"
+                    ],
+                    "properties": {
+                        "TTL": 3600,
+                        "SOARecord": {
+                            "email": "azuredns-hostmaster.microsoft.com",
+                            "expireTime": 2419200,
+                            "host": "ns1-09.azure-dns.com.",
+                            "minimumTTL": 300,
+                            "refreshTime": 3600,
+                            "retryTime": 300,
+                            "serialNumber": 1
+                        },
+                        "targetResource": {}
+                    }
+                }
+            ]
+        },
+        {
+            "comments": "Prod Blog Entry",
+            "name": "[concat(variables('Domain'), '/')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "http://vplauzon.github.io/"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
