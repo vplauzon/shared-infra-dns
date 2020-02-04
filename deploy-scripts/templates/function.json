@@ -2,6 +2,20 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "releaseFolderUrl": {
+            "type": "string",
+            "minLength": 5,
+            "metadata": {
+                "description": "Release folder URL (in storage account)"
+            }
+        },
+        "sasToken": {
+            "type": "string",
+            "minLength": 5,
+            "metadata": {
+                "description": "Container's SAS token"
+            }
+        }
     },
     "variables": {
         "Unique ID": "[uniqueString(resourceGroup().id)]",
@@ -116,24 +130,14 @@
                         "config": {
                             "bindings": [
                                 {
-                                    "authLevel": "function",
-                                    "name": "request",
-                                    "type": "httpTrigger",
+                                    "name": "timer",
+                                    "type": "timerTrigger",
                                     "direction": "in",
-                                    "methods": [
-                                        "get",
-                                        "post"
-                                    ]
-                                },
-                                {
-                                    "name": "res",
-                                    "type": "http",
-                                    "direction": "out"
+                                    "schedule": "0 0/15 * 1/1 * ? *"
                                 }
                             ]
                         },
-                        "files": {
-                        },
+                        "script_href": "[concat(parameters('releaseFolderUrl'), '/templates/code/dns-check/dns-check.csx?', parameters('sasToken'))]",
                         "isDisabled": false
                     }
                 }
