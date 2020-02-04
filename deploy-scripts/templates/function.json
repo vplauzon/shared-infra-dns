@@ -8,7 +8,8 @@
         "App Insights Name": "[concat('app-insights-', variables('Unique ID'))]",
         "Storage Account Name": "[concat('funcsto', variables('Unique ID'))]",
         "Function Plan Name": "function-plan",
-        "Function App Name": "[concat('function-app-', variables('Unique ID'))]"
+        "Function App Name": "[concat('function-app-', variables('Unique ID'))]",
+        "DNS Check Function Name": "dns-check"
     },
     "resources": [
         {
@@ -104,6 +105,38 @@
                 }
             },
             "resources": [
+                {
+                    "type": "functions",
+                    "apiVersion": "2019-08-01",
+                    "name": "[variables('DNS Check Function Name')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('Function App Name'))]"
+                    ],
+                    "properties": {
+                        "config": {
+                            "bindings": [
+                                {
+                                    "authLevel": "function",
+                                    "name": "request",
+                                    "type": "httpTrigger",
+                                    "direction": "in",
+                                    "methods": [
+                                        "get",
+                                        "post"
+                                    ]
+                                },
+                                {
+                                    "name": "res",
+                                    "type": "http",
+                                    "direction": "out"
+                                }
+                            ]
+                        },
+                        "files": {
+                        },
+                        "isDisabled": false
+                    }
+                }
             ]
         }
     ],
