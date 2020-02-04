@@ -26,7 +26,7 @@
     },
     "variables": {
         "Dns Deployment": "[concat('dns-', parameters('deploymentUid'))]",
-        "Function Deployment": "[concat('dns-', parameters('deploymentUid'))]"
+        "Function Deployment": "[concat('function-', parameters('deploymentUid'))]"
     },
     "resources": [
         {
