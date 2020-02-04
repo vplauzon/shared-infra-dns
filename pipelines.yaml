@@ -56,8 +56,7 @@ stages:
           resourceGroupName: $(rg)
           location: '$(location)'
           templateLocation:  Linked artifact
-          csmFile: $(Pipeline.Workspace)/deploy-scripts/artefact-storage.json
-          # csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/artefact-storage.parameters.json
+          csmFile: $(Pipeline.Workspace)/deploy-scripts/templates/artefact-storage.json
           overrideParameters: -storageAccountName $(deploy-storage-name) -containerName $(deploy-container-name)
         timeoutInMinutes: 3
       # Copy files to storage
@@ -89,6 +88,5 @@ stages:
           location: '$(location)'
           templateLocation:  Linked artifact
           csmFile: $(Pipeline.Workspace)/deploy-scripts/vpl-dns.json
-          #csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/deploy.prod.parameters.json
           overrideParameters: ''
         timeoutInMinutes: 3
