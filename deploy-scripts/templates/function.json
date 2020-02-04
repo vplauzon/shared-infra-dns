@@ -8,7 +8,7 @@
         "App Insights Name": "[concat('app-insights-', variables('Unique ID'))]",
         "Storage Account Name": "[concat('funcsto', variables('Unique ID'))]",
         "Function Plan Name": "function-plan",
-        "Function App Name": "[concat('function-app-', variables('Unique ID'))]",
+        "Function App Name": "vpl-dns-function-app",
         "DNS Check Function Name": "dns-check"
     },
     "resources": [

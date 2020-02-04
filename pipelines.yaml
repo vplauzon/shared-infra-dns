@@ -20,6 +20,22 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
+      # Publish the function project
+      - task: DotNetCoreCLI@2
+        displayName: 'dotnet publish'
+        inputs:
+          command: publish
+          publishWebProjects: false
+          projects: '**/*.csproj'
+          arguments: '-o function'
+          zipAfterPublish: true
+          modifyOutputPath: true
+      # Publish "function" artefact
+      - task: PublishBuildArtifacts@1
+        displayName: "Publish artifact:  function"
+        inputs:
+          PathtoPublish: function
+          ArtifactName: function
       # Publish "deploy-scripts" artefact
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifact: deploy-scripts'
@@ -44,10 +60,13 @@ stages:
       steps:
       # Don't checkout repo
       - checkout: none
-      # Download artefact from previous stage
+      # Download deploy-scripts artefact from previous stage
       - download: current
         artifact: deploy-scripts
-      - bash:  ls -l $(Pipeline.Workspace)/deploy-scripts/templates/artefact-storage.json
+      # Download function artefact from previous stage
+      - download: current
+        displayName:  Download function
+        artifact: function
       # Deploy artefact storage
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - Storage
@@ -90,3 +109,11 @@ stages:
           csmFile: $(Pipeline.Workspace)/deploy-scripts/templates/master.json
           overrideParameters: -deploymentUid $(deployment-uid) -sasToken $(sas) -releaseFolderUrl https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)
         timeoutInMinutes: 3
+      # Deploy function app
+      - task: AzureFunctionApp@1
+        inputs:
+          azureSubscription: shared-infra
+          appName: 'vpl-dns-function-app'
+          appType: 'functionAppLinux'
+          package: $(Pipeline.Workspace)/function/**/*.zip
+          runtimeStack: 'DOCKER|microsoft/azure-functions-dotnet-core2.0:2.0'

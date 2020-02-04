@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "mainIpDev": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/867feb0a-8313-464d-ad48-b4904383f9bc/resourceGroups/vpl-vaults/providers/Microsoft.KeyVault/vaults/vpl-shared-vault"
+                },
+                "secretName": "dev-ip"
+            }
+        },
+        "mainIpBlueProd": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/867feb0a-8313-464d-ad48-b4904383f9bc/resourceGroups/vpl-vaults/providers/Microsoft.KeyVault/vaults/vpl-shared-vault"
+                },
+                "secretName": "prod-ip-blue"
+            }
+        },
+        "mainIpGreenProd": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/867feb0a-8313-464d-ad48-b4904383f9bc/resourceGroups/vpl-vaults/providers/Microsoft.KeyVault/vaults/vpl-shared-vault"
+                },
+                "secretName": "prod-ip-green"
+            }
+        }
+    }
+}
