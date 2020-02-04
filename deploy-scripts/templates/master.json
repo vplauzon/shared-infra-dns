@@ -25,7 +25,8 @@
         }
     },
     "variables": {
-        "Dns Deployment": "[concat('dns-', parameters('deploymentUid'))]"
+        "Dns Deployment": "[concat('dns-', parameters('deploymentUid'))]",
+        "Function Deployment": "[concat('dns-', parameters('deploymentUid'))]"
     },
     "resources": [
         {
@@ -46,7 +47,7 @@
         {
             "apiVersion": "2019-05-01",
             "type": "Microsoft.Resources/deployments",
-            "name": "[variables('Dns Deployment')]",
+            "name": "[variables('Function Deployment')]",
             "dependsOn": [
             ],
             "properties": {
