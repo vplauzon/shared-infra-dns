@@ -50,7 +50,7 @@ stages:
       - bash:  ls -l $(Pipeline.Workspace)/deploy-scripts/templates/artefact-storage.json
       # Deploy artefact storage
       - task: AzureResourceGroupDeployment@2
-        displayName: Azure Deployment - artefact-storage.json
+        displayName: Azure Deployment - Storage
         inputs:
           azureSubscription: shared-infra
           resourceGroupName: $(rg)
@@ -79,14 +79,15 @@ stages:
           scriptLocation: scriptPath
           scriptPath: $(Pipeline.Workspace)/deploy-scripts/create-sas-token.sh
           arguments: $(deploy-storage-name)
-      # Deploy ARM template from artefact files
+      # Deploy Master ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
-        displayName: Azure Deployment - vpl-dns.json
+        displayName: Azure Deployment - Master
         inputs:
           azureSubscription: shared-infra
           resourceGroupName: $(rg)
           location: '$(location)'
           templateLocation:  Linked artifact
-          csmFile: $(Pipeline.Workspace)/deploy-scripts/vpl-dns.json
-          overrideParameters: ''
+          csmFile: https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)/master.json
+          csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/templates/master.prod.parameters.json
+          overrideParameters: -deploymentUid $(deployment-uid) -sasToken $(sas) -releaseFolderUrl https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)
         timeoutInMinutes: 3

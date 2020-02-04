@@ -1,0 +1,214 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "mainIpDev": {
+            "metadata": {
+                "description": "Main IP of dev cluster"
+            },
+            "type": "string"
+        },
+        "mainIpBlueProd": {
+            "metadata": {
+                "description": "Main IP of the blue-prod cluster"
+            },
+            "type": "string"
+        },
+        "mainIpGreenProd": {
+            "metadata": {
+                "description": "Main IP of the green-prod cluster"
+            },
+            "type": "string"
+        }
+    },
+    "variables": {
+        "Is Prod Blue": false,
+        "Domain": "vplauzon.com",
+        "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
+        "TTL": "20",
+        "Main IP Prod":"[if(variables('Is Prod Blue'), parameters('mainIpBlueProd'), parameters('mainIpGreenProd'))]",
+        "Main IP Mappings": [
+            {
+                "from": "main-ip.dev",
+                "to": "[parameters('mainIpDev')]"
+            },
+            {
+                "from": "main-ip.blue",
+                "to": "[parameters('mainIpBlueProd')]"
+            },
+            {
+                "from": "main-ip.green",
+                "to": "[parameters('mainIpGreenProd')]"
+            },
+            {
+                "from": "main-ip",
+                "to": "[variables('Main IP Prod')]"
+            }
+        ],
+        "Apps Dev": [
+            "pas-api",
+            "pas-workbench"
+        ],
+        "Apps Prod": "[variables('Apps Dev')]"
+    },
+    "resources": [
+        {
+            "comments": "Boiler plate entries",
+            "name": "[variables('Domain')]",
+            "type": "Microsoft.Network/dnsZones",
+            "apiVersion": "2017-09-01",
+            "location": "global",
+            "tags": {},
+            "properties": {},
+            "resources": [
+                {
+                    "name": "@",
+                    "type": "NS",
+                    "apiVersion": "2018-05-01",
+                    "dependsOn": [
+                        "[variables('Domain ID')]"
+                    ],
+                    "properties": {
+                        "TTL": 172800,
+                        "NSRecords": [
+                            {
+                                "nsdname": "ns1-09.azure-dns.com."
+                            },
+                            {
+                                "nsdname": "ns2-09.azure-dns.net."
+                            },
+                            {
+                                "nsdname": "ns3-09.azure-dns.org."
+                            },
+                            {
+                                "nsdname": "ns4-09.azure-dns.info."
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "@",
+                    "type": "SOA",
+                    "apiVersion": "2018-05-01",
+                    "dependsOn": [
+                        "[variables('Domain ID')]"
+                    ],
+                    "properties": {
+                        "TTL": 3600,
+                        "SOARecord": {
+                            "email": "azuredns-hostmaster.microsoft.com",
+                            "expireTime": 2419200,
+                            "host": "ns1-09.azure-dns.com.",
+                            "minimumTTL": 300,
+                            "refreshTime": 3600,
+                            "retryTime": 300,
+                            "serialNumber": 1
+                        },
+                        "targetResource": {}
+                    }
+                }
+            ]
+        },
+        {
+            "comments": "Main IP Entries",
+            "copy": {
+                "name": "main-ips",
+                "count": "[length(variables('Main IP Mappings'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('Main IP Mappings')[copyIndex()].from)]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[variables('Main IP Mappings')[copyIndex()].to]"
+                }
+            }
+        },
+        {
+            "comments": "Dev Entries",
+            "copy": {
+                "name": "dev-entries",
+                "count": "[length(variables('Apps Dev'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('Apps Dev')[copyIndex()], '.dev')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[concat('main-ip.dev.', variables('Domain'))]"
+                }
+            }
+        },
+        {
+            "comments": "Prod Blue Entries",
+            "copy": {
+                "name": "prod-blue-entries",
+                "count": "[length(variables('Apps Prod'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('Apps Prod')[copyIndex()], '.blue')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[concat('main-ip.blue.', variables('Domain'))]"
+                }
+            }
+        },
+        {
+            "comments": "Prod Green Entries",
+            "copy": {
+                "name": "prod-green-entries",
+                "count": "[length(variables('Apps Prod'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('Apps Prod')[copyIndex()], '.green')]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[concat('main-ip.green.', variables('Domain'))]"
+                }
+            }
+        },
+        {
+            "comments": "Prod Entries",
+            "copy": {
+                "name": "prod-entries",
+                "count": "[length(variables('Apps Prod'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('Apps Prod')[copyIndex()])]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "metadata": {},
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[concat('main-ip.', variables('Domain'))]"
+                }
+            }
+        }
+    ],
+    "outputs": {}
+}
