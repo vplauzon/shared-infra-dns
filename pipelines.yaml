@@ -45,7 +45,7 @@ stages:
       # Don't checkout repo
       - checkout: none
       # Download artefact from previous stage
-      - download: deploy-scripts
+      - download: current
         artifact: deploy-scripts
       - bash:  ls -l $(Pipeline.Workspace)/deploy-scripts
       # Deploy artefact storage
