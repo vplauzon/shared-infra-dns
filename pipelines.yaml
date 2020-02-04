@@ -20,18 +20,12 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
-      # Copy source to "content" folder
-      - bash:  |
-          mkdir content
-          cp *.json content
-          cp *.sh content
-        displayName:  Copy artefacts
-      # Publish "content" artefact
+      # Publish "deploy-scripts" artefact
       - task: PublishBuildArtifacts@1
-        displayName: 'Publish Artifact: content'
+        displayName: 'Publish Artifact: deploy-scripts'
         inputs:
-          PathtoPublish: content
-          ArtifactName: content
+          PathtoPublish: deploy-scripts
+          ArtifactName: deploy-scripts
   - stage:  release
     dependsOn:  build
     variables: []
@@ -51,9 +45,9 @@ stages:
       # Don't checkout repo
       - checkout: none
       # Download artefact from previous stage
-      - download: current
-        artifact: content
-      - bash:  ls -l $(Pipeline.Workspace)/content
+      - download: deploy-scripts
+        artifact: deploy-scripts
+      - bash:  ls -l $(Pipeline.Workspace)/deploy-scripts
       # Deploy artefact storage
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - artefact-storage.json
@@ -62,8 +56,8 @@ stages:
           resourceGroupName: $(rg)
           location: '$(location)'
           templateLocation:  Linked artifact
-          csmFile: $(Pipeline.Workspace)/content/artefact-storage.json
-          # csmParametersFile: $(Pipeline.Workspace)/content/artefact-storage.parameters.json
+          csmFile: $(Pipeline.Workspace)/deploy-scripts/artefact-storage.json
+          # csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/artefact-storage.parameters.json
           overrideParameters: -storageAccountName $(deploy-storage-name) -containerName $(deploy-container-name)
         timeoutInMinutes: 3
       # Copy files to storage
@@ -71,20 +65,20 @@ stages:
         displayName: Copy files to storage
         inputs:
           azureSubscription: shared-infra
-          workingDirectory:  $(Pipeline.Workspace)/content
+          workingDirectory:  $(Pipeline.Workspace)/deploy-scripts/templates
           scriptType: 'bash'
           scriptLocation: scriptPath
-          scriptPath: $(Pipeline.Workspace)/content/copy-artefacts.sh
+          scriptPath: $(Pipeline.Workspace)/deploy-scripts/copy-artefacts.sh
           arguments: https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)
       # Create storage SAS Token
       - task: AzureCLI@2
         displayName: Create SAS Token
         inputs:
           azureSubscription: shared-infra
-          workingDirectory:  $(Pipeline.Workspace)/content
+          workingDirectory:  $(Pipeline.Workspace)/deploy-scripts
           scriptType: 'bash'
           scriptLocation: scriptPath
-          scriptPath: $(Pipeline.Workspace)/content/create-sas-token.sh
+          scriptPath: $(Pipeline.Workspace)/deploy-scripts/create-sas-token.sh
           arguments: $(deploy-storage-name)
       # Deploy ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
@@ -94,7 +88,7 @@ stages:
           resourceGroupName: $(rg)
           location: '$(location)'
           templateLocation:  Linked artifact
-          csmFile: $(Pipeline.Workspace)/content/vpl-dns.json
-          #csmParametersFile: $(Pipeline.Workspace)/content/deploy.prod.parameters.json
+          csmFile: $(Pipeline.Workspace)/deploy-scripts/vpl-dns.json
+          #csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/deploy.prod.parameters.json
           overrideParameters: ''
         timeoutInMinutes: 3
