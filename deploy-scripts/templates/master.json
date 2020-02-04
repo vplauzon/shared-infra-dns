@@ -56,12 +56,6 @@
                     "uri": "[concat(parameters('releaseFolderUrl'), '/templates/function.json?', parameters('sasToken'))]"
                 },
                 "parameters": {
-                    "releaseFolderUrl": {
-                        "value": "[parameters('releaseFolderUrl')]"
-                    },
-                    "sasToken": {
-                        "value": "[parameters('sasToken')]"
-                    }
                 }
             }
         }

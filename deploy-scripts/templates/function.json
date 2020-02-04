@@ -2,20 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "releaseFolderUrl": {
-            "type": "string",
-            "minLength": 5,
-            "metadata": {
-                "description": "Release folder URL (in storage account)"
-            }
-        },
-        "sasToken": {
-            "type": "string",
-            "minLength": 5,
-            "metadata": {
-                "description": "Container's SAS token"
-            }
-        }
     },
     "variables": {
         "Unique ID": "[uniqueString(resourceGroup().id)]",
@@ -119,28 +105,6 @@
                 }
             },
             "resources": [
-                {
-                    "type": "functions",
-                    "apiVersion": "2019-08-01",
-                    "name": "[variables('DNS Check Function Name')]",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/sites', variables('Function App Name'))]"
-                    ],
-                    "properties": {
-                        "config": {
-                            "bindings": [
-                                {
-                                    "name": "timer",
-                                    "type": "timerTrigger",
-                                    "direction": "in",
-                                    "schedule": "0 0/15 * 1/1 * ? *"
-                                }
-                            ]
-                        },
-                        "script_href": "[concat(parameters('releaseFolderUrl'), '/templates/code/dns-check/dns-check.csx?', parameters('sasToken'))]",
-                        "isDisabled": false
-                    }
-                }
             ]
         }
     ],
