@@ -24,6 +24,7 @@ stages:
       - bash:  |
           mkdir content
           cp *.json content
+          cp *.sh content
         displayName:  Copy artefacts
       # Publish "content" artefact
       - task: PublishBuildArtifacts@1
@@ -33,13 +34,17 @@ stages:
           ArtifactName: content
   - stage:  release
     dependsOn:  build
-    variables:  []
+    variables: []
     jobs:
     - job:  main
       dependsOn:  []
       variables:
         location: eastus
         rg: vpl-dns
+        deploy-storage-name: vpldnsdeploy
+        deploy-container-name: artefacts
+        folder:  $(System.TeamProject)/$(Build.DefinitionName)/$(Build.BuildId)/$(System.StageName)/$(System.StageAttempt)
+        deployment-uid:  $(System.TeamProject)-$(Build.DefinitionName)-$(Build.BuildId)-$(System.StageName)-$(System.StageAttempt)
       pool:
         vmImage: ubuntu-latest
       steps:
@@ -49,6 +54,38 @@ stages:
       - download: current
         artifact: content
       - bash:  ls -l $(Pipeline.Workspace)/content
+      # Deploy artefact storage
+      - task: AzureResourceGroupDeployment@2
+        displayName: Azure Deployment - artefact-storage.json
+        inputs:
+          azureSubscription: shared-infra
+          resourceGroupName: $(rg)
+          location: '$(location)'
+          templateLocation:  Linked artifact
+          csmFile: $(Pipeline.Workspace)/content/artefact-storage.json
+          # csmParametersFile: $(Pipeline.Workspace)/content/artefact-storage.parameters.json
+          overrideParameters: -storageAccountName $(deploy-storage-name) -containerName $(deploy-container-name)
+        timeoutInMinutes: 3
+      # Copy files to storage
+      - task: AzureCLI@2
+        displayName: Copy files to storage
+        inputs:
+          azureSubscription: shared-infra
+          workingDirectory:  $(Pipeline.Workspace)/content
+          scriptType: 'bash'
+          scriptLocation: scriptPath
+          scriptPath: $(Pipeline.Workspace)/content/copy-artefacts.sh
+          arguments: https://$(deploy-storage-name).blob.core.windows.net/$(deploy-container-name)/$(folder)
+      # Create storage SAS Token
+      - task: AzureCLI@2
+        displayName: Create SAS Token
+        inputs:
+          azureSubscription: shared-infra
+          workingDirectory:  $(Pipeline.Workspace)/content
+          scriptType: 'bash'
+          scriptLocation: scriptPath
+          scriptPath: $(Pipeline.Workspace)/content/create-sas-token.sh
+          arguments: $(deploy-storage-name)
       # Deploy ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - vpl-dns.json
