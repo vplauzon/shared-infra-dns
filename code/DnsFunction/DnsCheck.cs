@@ -10,6 +10,7 @@ namespace DnsFunction
         [FunctionName("DnsCheck")]
         public static void Run([TimerTrigger("0 */15 * * * *")]TimerInfo timer, ILogger log)
         {
+            //vplauzon.github.io
             log.LogInformation($"Timer trigger function executed at: {DateTime.Now}");
         }
     }

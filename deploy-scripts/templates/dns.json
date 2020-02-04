@@ -6,7 +6,21 @@
     "variables": {
         "Domain": "vincentlauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
-        "TTL": "20"
+        "TTL": "60",
+        "IPs Array": [
+            {
+                "ipv4Address": "185.199.109.153"
+            },
+            {
+                "ipv4Address": "185.199.111.153"
+            },
+            {
+                "ipv4Address": "185.199.110.153"
+            },
+            {
+                "ipv4Address": "185.199.108.153"
+            }
+        ]
     },
     "resources": [
         {
@@ -21,8 +35,8 @@
             "resources": [
                 {
                     "comments": "Prod Blog Entry",
-                    "name": "*",
-                    "type": "CNAME",
+                    "name": "@",
+                    "type": "A",
                     "apiVersion": "2018-05-01",
                     "dependsOn": [
                         "[variables('Domain ID')]"
@@ -31,9 +45,7 @@
                         "metadata": {
                         },
                         "TTL": "[variables('TTL')]",
-                        "CNAMERecord": {
-                            "cname": "vplauzon.github.io"
-                        }
+                        "ARecords": "[variables('IPs Array')]"
                     }
                 }
             ]
