@@ -8,8 +8,7 @@
         "App Insights Name": "[concat('app-insights-', variables('Unique ID'))]",
         "Storage Account Name": "[concat('funcsto', variables('Unique ID'))]",
         "Function Plan Name": "function-plan",
-        "Function App Name": "vpl-dns-function-app",
-        "DNS Check Function Name": "dns-check"
+        "Function App Name": "vpl-dns-function-app"
     },
     "resources": [
         {
@@ -95,7 +94,7 @@
                         },
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[variables('App Insights Name')]"
+                            "value": "[reference(resourceId('microsoft.insights/components/', variables('App Insights Name')), '2015-05-01').InstrumentationKey]"
                         },
                         {
                             "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
