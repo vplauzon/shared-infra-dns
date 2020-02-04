@@ -47,7 +47,7 @@ stages:
       # Download artefact from previous stage
       - download: current
         artifact: deploy-scripts
-      - bash:  ls -l $(Pipeline.Workspace)/deploy-scripts
+      - bash:  ls -l $(Pipeline.Workspace)/deploy-scripts/templates/artefact-storage.json
       # Deploy artefact storage
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - artefact-storage.json
