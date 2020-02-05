@@ -4,6 +4,12 @@
   "parameters": {
     "blogIps": [
       {
+        "ipv4Address": "185.199.110.153"
+      },
+      {
+        "ipv4Address": "185.199.109.153"
+      },
+      {
         "ipv4Address": "185.199.108.153"
       },
       {
