@@ -2,29 +2,21 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "mainIpDev": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/867feb0a-8313-464d-ad48-b4904383f9bc/resourceGroups/vpl-vaults/providers/Microsoft.KeyVault/vaults/vpl-shared-vault"
+        "blogIps": {
+            "value": [
+                {
+                    "ipv4Address": "185.199.109.153"
                 },
-                "secretName": "dev-ip"
-            }
-        },
-        "mainIpBlueProd": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/867feb0a-8313-464d-ad48-b4904383f9bc/resourceGroups/vpl-vaults/providers/Microsoft.KeyVault/vaults/vpl-shared-vault"
+                {
+                    "ipv4Address": "185.199.111.153"
                 },
-                "secretName": "prod-ip-blue"
-            }
-        },
-        "mainIpGreenProd": {
-            "reference": {
-                "keyVault": {
-                    "id": "/subscriptions/867feb0a-8313-464d-ad48-b4904383f9bc/resourceGroups/vpl-vaults/providers/Microsoft.KeyVault/vaults/vpl-shared-vault"
+                {
+                    "ipv4Address": "185.199.110.153"
                 },
-                "secretName": "prod-ip-green"
-            }
+                {
+                    "ipv4Address": "185.199.108.153"
+                }
+            ]
         }
     }
 }

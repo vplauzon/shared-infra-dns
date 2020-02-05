@@ -2,25 +2,18 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "blogIps": {
+            "type": "array",
+            "minLength": 1,
+            "metadata": {
+                "description": "IPs of the blog domain"
+            }
+        }
     },
     "variables": {
         "Domain": "vincentlauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
-        "TTL": "60",
-        "IPs Array": [
-            {
-                "ipv4Address": "185.199.109.153"
-            },
-            {
-                "ipv4Address": "185.199.111.153"
-            },
-            {
-                "ipv4Address": "185.199.110.153"
-            },
-            {
-                "ipv4Address": "185.199.108.153"
-            }
-        ]
+        "TTL": "60"
     },
     "resources": [
         {
@@ -45,7 +38,7 @@
                         "metadata": {
                         },
                         "TTL": "[variables('TTL')]",
-                        "ARecords": "[variables('IPs Array')]"
+                        "ARecords": "[parameters('blogIps')]"
                     }
                 }
             ]

@@ -52,4 +52,5 @@ stages:
           location: '$(location)'
           templateLocation:  Linked artifact
           csmFile: $(Pipeline.Workspace)/deploy-scripts/dns.json
+          csmParametersFile: $(Pipeline.Workspace)/deploy-scripts/dns.parameters.json
         timeoutInMinutes: 3
