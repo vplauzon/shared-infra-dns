@@ -22,7 +22,6 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
-      - script:  ls -l
       # Deploy Master ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - Master
@@ -31,6 +30,6 @@ stages:
           resourceGroupName: $(rg)
           location: '$(location)'
           templateLocation:  Linked artifact
-          csmFile: deploy-scripts/dns.json
-          csmParametersFile: deploy-scripts/dns.parameters.json
+          csmFile: dns.json
+          csmParametersFile: dns.parameters.json
         timeoutInMinutes: 3
