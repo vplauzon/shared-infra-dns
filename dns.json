@@ -11,10 +11,25 @@
         }
     },
     "variables": {
+        "default-colour": "blue",
         "Domain": "vincentlauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "60",
-        "blog-api": "vpl-blog-apim.azure-api.net"
+        "blog-api": "vpl-blog-apim.azure-api.net",
+        "shared-infra-cnames": [
+            {
+                "name": "pas-api.blue.dev",
+                "cname": "vpl-main-ip-dev-blue.eastus.cloudapp.azure.com"
+            },
+            {
+                "name": "pas-api.green.dev",
+                "cname": "vpl-main-ip-dev-blue.eastus.cloudapp.azure.com"
+            },
+            {
+                "name": "pas-api.dev",
+                "cname": "[concat('pas-api.', variables('default-colour'), '.dev.vincentlauzon.com')]"
+            }
+        ]
     },
     "resources": [
         {
@@ -51,14 +66,34 @@
                         "[variables('Domain ID')]"
                     ],
                     "properties": {
-                        "TTL": 60,
+                        "TTL": "[variables('TTL')]",
                         "CNAMERecord": {
                             "cname": "[variables('blog-api')]"
                         }
                     }
                 }
             ]
+        },
+        {
+            "comments": "Shared Infra CNAMEs",
+            "type": "Microsoft.Network/dnszones/CNAME",
+            "apiVersion": "2018-05-01",
+            "copy": {
+                "name": "shared-infra-cnames",
+                "count": "[length(variables('shared-infra-cnames'))]"
+            },
+            "name": "[variables('shared-infra-cnames')[copyIndex()].name]",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[variables('shared-infra-cnames')[copyIndex()].cname]"
+                }
+            }
         }
+
     ],
     "outputs": {
     }
