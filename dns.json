@@ -82,7 +82,7 @@
                 "name": "shared-infra-cnames",
                 "count": "[length(variables('shared-infra-cnames'))]"
             },
-            "name": "[variables('shared-infra-cnames')[copyIndex()].name]",
+            "name": "[concat(variables('Domain'), '/', variables('shared-infra-cnames')[copyIndex()].name)]",
             "dependsOn": [
                 "[variables('Domain ID')]"
             ],
