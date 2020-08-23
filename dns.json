@@ -13,7 +13,8 @@
     "variables": {
         "Domain": "vincentlauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
-        "TTL": "60"
+        "TTL": "60",
+        "blog-api": "vpl-blog-apim.azure-api.net"
     },
     "resources": [
         {
@@ -39,6 +40,21 @@
                         },
                         "TTL": "[variables('TTL')]",
                         "ARecords": "[parameters('blogIps')]"
+                    }
+                },
+                {
+                    "comments": "Prod Blog API",
+                    "type": "CNAME",
+                    "apiVersion": "2018-05-01",
+                    "name": "blog-api",
+                    "dependsOn": [
+                        "[variables('Domain ID')]"
+                    ],
+                    "properties": {
+                        "TTL": 60,
+                        "CNAMERecord": {
+                            "cname": "[variables('blog-api')]"
+                        }
                     }
                 }
             ]

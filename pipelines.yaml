@@ -20,29 +20,6 @@ stages:
       pool:
         vmImage: 'ubuntu-latest'
       steps:
-      # Publish "deploy-scripts" artefact
-      - task: PublishBuildArtifacts@1
-        displayName: 'Publish Artifact: deploy-scripts'
-        inputs:
-          PathtoPublish: .
-          ArtifactName: deploy-scripts
-  - stage:  release
-    dependsOn:  build
-    variables: []
-    jobs:
-    - job:  main
-      dependsOn:  []
-      variables:
-        location: eastus
-        rg: vpl-dns
-      pool:
-        vmImage: ubuntu-latest
-      steps:
-      # Don't checkout repo
-      - checkout: none
-      # Download deploy-scripts artefact from previous stage
-      - download: current
-        artifact: deploy-scripts
       # Deploy Master ARM template from artefact files
       - task: AzureResourceGroupDeployment@2
         displayName: Azure Deployment - Master
