@@ -11,7 +11,9 @@ trigger:
 stages:
   - stage:  build
     dependsOn:  []
-    variables:  []
+    variables:
+      location: eastus
+      rg: vpl-dns
     jobs:
     - job:  main
       dependsOn:  []
