@@ -11,7 +11,7 @@
         }
     },
     "variables": {
-        "default-colour": "blue",
+        "default-colour": "green",
         "Domain": "vincentlauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "60",
