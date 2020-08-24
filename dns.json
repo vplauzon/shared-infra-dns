@@ -28,6 +28,18 @@
             {
                 "name": "pas-api.dev",
                 "cname": "[concat('pas-api.', variables('default-colour'), '.dev.vincentlauzon.com')]"
+            },
+            {
+                "name": "pas.blue.dev",
+                "cname": "vpl-main-ip-dev-blue.eastus.cloudapp.azure.com"
+            },
+            {
+                "name": "pas.green.dev",
+                "cname": "vpl-main-ip-dev-green.eastus.cloudapp.azure.com"
+            },
+            {
+                "name": "pas.dev",
+                "cname": "[concat('pas.', variables('default-colour'), '.dev.vincentlauzon.com')]"
             }
         ]
     },
