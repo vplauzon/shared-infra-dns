@@ -23,7 +23,7 @@
             },
             {
                 "name": "pas-api.green.dev",
-                "cname": "vpl-main-ip-dev-blue.eastus.cloudapp.azure.com"
+                "cname": "vpl-main-ip-dev-green.eastus.cloudapp.azure.com"
             },
             {
                 "name": "pas-api.dev",
