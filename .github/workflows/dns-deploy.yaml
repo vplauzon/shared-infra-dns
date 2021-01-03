@@ -1,0 +1,24 @@
+name:  Azure Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  rg:  vpl-dns
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    # Login
+    - name: Azure Login
+      run: az login --service-principal -u ${{ secrets.sp_id }} -p ${{ secrets.sp_secret }} --tenant ${{ secrets.tenant_id }}
+    # Deploy
+    - name: Deploy
+      run: |
+        bash deploy-dns-infra.sh $rg
