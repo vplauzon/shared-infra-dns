@@ -14,7 +14,13 @@
         "Domain": "vincentlauzon.com",
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "60",
-        "blog-api": "vpl-blog-apim.azure-api.net"
+        "blog-api": "vpl-blog-apim.azure-api.net",
+        "GramParser Entries": [
+            {
+                "name": "gram-parser.dev",
+                "cname": "workbench-dev-gram-parser-jlv6prl7bdhpu.azurewebsites.net"
+            }
+        ]
     },
     "resources": [
         {
@@ -58,6 +64,25 @@
                     }
                 }
             ]
+        },
+        {
+            "comments": "Gram-Parser entries",
+            "type": "Microsoft.Network/dnszones/CNAME",
+            "apiVersion": "2018-05-01",
+            "copy": {
+                "name": "gram-parser",
+                "count": "[length(variables('GramParser Entries'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('GramParser Entries')[copyIndex()].name)]",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[variables('GramParser Entries')[copyIndex()].cname]"
+                }
+            }
         }
     ],
     "outputs": {
