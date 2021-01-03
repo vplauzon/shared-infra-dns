@@ -5,8 +5,8 @@ resources:
 
 variables:  []
 
-trigger:
-- master
+# trigger:
+# - master
 
 stages:
   - stage:  build
