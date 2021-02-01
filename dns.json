@@ -15,7 +15,8 @@
         "Domain ID": "[resourceId('Microsoft.Network/dnszones', variables('Domain'))]",
         "TTL": "60",
         "blog-api": "vpl-blog-apim.azure-api.net",
-        "gram-parser-fd": "front-door-gram-parser-jlv6prl7bdhpu.azurefd.net"
+        "gram-parser-fd": "front-door-gram-parser-jlv6prl7bdhpu.azurefd.net",
+        "gram-parser-domains": [ "dev.gram-parser", "staging.gram-parser", "gram-parser" ]
     },
     "resources": [
         {
@@ -57,23 +58,46 @@
                             "cname": "[variables('blog-api')]"
                         }
                     }
-                },
-                {
-                    "comments": "Dev Gram Parser",
-                    "type": "CNAME",
-                    "apiVersion": "2018-05-01",
-                    "name": "gram-parser.dev",
-                    "dependsOn": [
-                        "[variables('Domain ID')]"
-                    ],
-                    "properties": {
-                        "TTL": "[variables('TTL')]",
-                        "CNAMERecord": {
-                            "cname": "[variables('gram-parser-fd')]"
-                        }
-                    }
                 }
             ]
+        },
+        {
+            "copy": {
+                "name": "gram-parser-domains",
+                "count": "[length(variables('gram-parser-domains'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('gram-parser-domains')[copyIndex()])]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "location": "global",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[variables('gram-parser-fd')]"
+                }
+            }
+        },
+        {
+            "copy": {
+                "name": "gram-parser-domains-verify",
+                "count": "[length(variables('gram-parser-domains'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', 'afdverify.', variables('gram-parser-domains')[copyIndex()])]",
+            "type": "Microsoft.Network/dnsZones/CNAME",
+            "apiVersion": "2018-05-01",
+            "location": "global",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "TTL": "[variables('TTL')]",
+                "CNAMERecord": {
+                    "cname": "[concat('afdverify.', variables('gram-parser-fd'))]"
+                }
+            }
         }
     ],
     "outputs": {
