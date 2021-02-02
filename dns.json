@@ -89,7 +89,7 @@
                 "name": "gram-parser-domains-app-service-verify",
                 "count": "[length(variables('gram-parser-domains'))]"
             },
-            "name": "[concat(variables('Domain'), '/', variables('gram-parser-domains')[copyIndex()])]",
+            "name": "[concat(variables('Domain'), '/asuid.', variables('gram-parser-domains')[copyIndex()])]",
             "type": "Microsoft.Network/dnsZones/TXT",
             "apiVersion": "2018-05-01",
             "location": "global",
