@@ -83,7 +83,11 @@
                     "cname": "[variables('gram-parser-fd')]"
                 },
                 "TXTRecords": [
-                    "[parameters('gramParserVerificationId')]"
+                    {
+                        "value": [
+                            "[parameters('gramParserVerificationId')]"
+                        ]
+                    }
                 ]
             }
         },
