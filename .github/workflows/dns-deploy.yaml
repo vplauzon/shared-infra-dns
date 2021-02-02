@@ -21,4 +21,4 @@ jobs:
     # Deploy
     - name: Deploy
       run: |
-        bash deploy-dns-infra.sh $rg
+        bash deploy-dns-infra.sh $rg ${{ secrets.GRAM_PARSER_VERIFICATION_ID }}

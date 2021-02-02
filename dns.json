@@ -8,6 +8,10 @@
             "metadata": {
                 "description": "IPs of the blog domain"
             }
+        },
+        "gramParserVerificationId": {
+            "minLength": 10,
+            "type": "string"
         }
     },
     "variables": {
@@ -77,7 +81,10 @@
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
                     "cname": "[variables('gram-parser-fd')]"
-                }
+                },
+                "TXTRecords": [
+                    "[parameters('gramParserVerificationId')]"
+                ]
             }
         },
         {
