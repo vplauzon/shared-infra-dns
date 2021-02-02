@@ -81,7 +81,23 @@
                 "TTL": "[variables('TTL')]",
                 "CNAMERecord": {
                     "cname": "[variables('gram-parser-fd')]"
-                },
+                }
+            }
+        },
+        {
+            "copy": {
+                "name": "gram-parser-domains-app-service-verify",
+                "count": "[length(variables('gram-parser-domains'))]"
+            },
+            "name": "[concat(variables('Domain'), '/', variables('gram-parser-domains')[copyIndex()])]",
+            "type": "Microsoft.Network/dnsZones/TXT",
+            "apiVersion": "2018-05-01",
+            "location": "global",
+            "dependsOn": [
+                "[variables('Domain ID')]"
+            ],
+            "properties": {
+                "TTL": "[variables('TTL')]",
                 "TXTRecords": [
                     {
                         "value": [
@@ -93,7 +109,7 @@
         },
         {
             "copy": {
-                "name": "gram-parser-domains-verify",
+                "name": "gram-parser-domains-fd-verify",
                 "count": "[length(variables('gram-parser-domains'))]"
             },
             "name": "[concat(variables('Domain'), '/', 'afdverify.', variables('gram-parser-domains')[copyIndex()])]",
